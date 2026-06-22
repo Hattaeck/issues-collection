@@ -37,14 +37,12 @@ public class IssueManagerTest {
 
     @Test
     public void shouldFilterWithPredicateAndSortWithComparator() {
-
         List<Issue> actual = manager.filterAndSort(
                 issue -> issue.isStatus(),
-                Comparator.comparing(Issue::getAuthor)
+                new IssueByAuthorComparator()
         );
 
         List<Issue> expected = List.of(issue3, issue1);
-
         assertEquals(expected, actual);
     }
 
