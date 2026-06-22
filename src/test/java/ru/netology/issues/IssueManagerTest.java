@@ -1,7 +1,8 @@
 package ru.netology.issues;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,15 +10,15 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IssueManagerTest {
-    private IssueRepository repository = new IssueRepository();
-    private IssueManager manager = new IssueManager(repository);
+    private static IssueRepository repository = new IssueRepository();
+    private static IssueManager manager = new IssueManager(repository);
 
-    private Issue issue1;
-    private Issue issue2;
-    private Issue issue3;
+    private static Issue issue1;
+    private static Issue issue2;
+    private static Issue issue3;
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    public static void setUp() {
         Set<String> tags1 = new HashSet<>();
         tags1.add("component: Jupiter");
         tags1.add("type: bug");
@@ -32,6 +33,17 @@ public class IssueManagerTest {
         manager.add(issue1);
         manager.add(issue2);
         manager.add(issue3);
+    }
+
+    @Test
+    public void shouldFilterWithPredicateAndSortWithComparator() {
+        List<Issue> actual = manager.filterAndSort(
+                issue -> issue.isStatus(),
+                new IssueByAuthorComparator()
+        );
+
+        List<Issue> expected = List.of(issue3, issue1);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -85,5 +97,7 @@ public class IssueManagerTest {
 
         List<Issue> actualClosed = manager.findClosed();
         assertTrue(actualClosed.contains(issue1));
+
+        manager.changeStatusById(1, true);
     }
 }
